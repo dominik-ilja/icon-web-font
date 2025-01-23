@@ -2,7 +2,8 @@
   "author": "",
   "dependencies": {
     "oslllo-svg-fixer": "^5.0.0",
-    "svgo": "^3.3.2"
+    "svgo": "^3.3.2",
+    "webfont": "^11.2.26"
   },
   "description": "This repository is a collection of icons that I use in icon web fonts.",
   "license": "ISC",

@@ -1,0 +1,45 @@
+@font-face {
+  font-display: swap;
+  font-family: "foxi-icons";
+  font-style: normal;
+  font-weight: normal;
+  src: url("foxi-icons.woff") format("woff");
+}
+
+[class^="icon-"],
+[class*=" icon-"] {
+  font-family: "foxi-icons" !important;
+  font-style: normal;
+  font-variant: normal;
+  font-weight: normal;
+  line-height: 1;
+  text-transform: none;
+}
+
+/* .icon-chevron-down:before {
+  content: "\e900";
+}
+.icon-circle-play:before {
+  content: "\e901";
+}
+.icon-discord:before {
+  content: "\e902";
+}
+.icon-facebook:before {
+  content: "\e903";
+}
+.icon-globe:before {
+  content: "\e904";
+}
+.icon-moon:before {
+  content: "\e905";
+}
+.icon-quote:before {
+  content: "\e906";
+}
+.icon-sun:before {
+  content: "\e907";
+}
+.icon-twitter:before {
+  content: "\e908";
+} */

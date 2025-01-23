@@ -16,9 +16,13 @@ icons/[icon-set]
 icons/lucide
 ```
 
+The SVG file sizes are more than likely going to be larger than their previous sives. We try to reduce that as much as we can using the [`svgo`](https://github.com/svg/svgo) package. Running svgo on the Lucide package removes between 121 bytes to 2,560 bytes per SVG.
 
+The final step is to pick out the icons you want to use in the web font.
 
 ## Todo
 
 - [ ] Create a script that'll pull icons from a given repo
-- [ ] Update script to automatically create the dist folder if it doesn't exist
+- [ ] Figure out how to use [webfont](https://github.com/itgalaxy/webfont/tree/master)
+- [x] Update script to automatically create the dist folder if it doesn't exist
+- [x] Have it loop over each folder within icons
