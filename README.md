@@ -24,5 +24,6 @@ The final step is to pick out the icons you want to use in the web font.
 
 - [ ] Create a script that'll pull icons from a given repo
 - [ ] Figure out how to use [webfont](https://github.com/itgalaxy/webfont/tree/master)
+- [ ] Look into library [svgicons2svgfont](https://github.com/nfroidure/svgicons2svgfont)
 - [x] Update script to automatically create the dist folder if it doesn't exist
 - [x] Have it loop over each folder within icons
