@@ -35,4 +35,4 @@ const config = Object.freeze({
   unicodeStartIndex: 59648,
 });
 
-module.exports.config = config;
+module.exports = config;
