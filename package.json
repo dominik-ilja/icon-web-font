@@ -11,7 +11,7 @@
   "scripts": {
     "build-icons": "node scripts/build-icons.js",
     "build-webfont": "node scripts/build-webfont.js",
-    "build": "build-icons && build-webfont"
+    "build": "npm run build-icons && npm run build-webfont"
   },
   "version": "1.0.0"
 }
