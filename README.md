@@ -27,3 +27,7 @@ The final step is to pick out the icons you want to use in the web font.
 - [ ] Look into library [svgicons2svgfont](https://github.com/nfroidure/svgicons2svgfont)
 - [x] Update script to automatically create the dist folder if it doesn't exist
 - [x] Have it loop over each folder within icons
+
+## Notes
+
+We simply need to create a part of the application that generates the web font. We don't need to worry about anything that comes before it.

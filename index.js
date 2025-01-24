@@ -6,75 +6,15 @@ const { basename, join } = require("node:path");
 // 3rd party modules
 const SVGFixer = require("oslllo-svg-fixer");
 const { optimize } = require("svgo");
-const webfont = require("webfont").default;
 
+const FIXED_ICON_DIRECTORY = join(__dirname, "fixed-icons");
 const SOURCE_DIRECTORY = join(__dirname, "icons");
 const OUTPUT_DIRECTORY = join(__dirname, "dist");
 const ENCODING = { encoding: "utf-8" };
-const FONT_NAME = "foxi-icons";
-const CLASS_PREFIX = "icon-";
-const FONT_ICONS = [
-  {
-    iconSet: "foxi",
-    icons: ["discord", "facebook", "twitter"],
-  },
-  {
-    iconSet: "lucide",
-    icons: [
-      "chevron-down",
-      "chevron-left",
-      "chevron-right",
-      "chevrons-left",
-      "chevrons-right",
-      "circle-play",
-      "globe",
-      "moon",
-      "quote",
-      "sun",
-    ],
-  },
-];
-const PRIVATE_USE_AREA_INDEX = 59648;
 
-async function run() {
-  let tempDir;
-  try {
-    // Fixer can't handle creating nested folders, so we have to do that ourself
-    if (!fs.existsSync(OUTPUT_DIRECTORY)) {
-      fs.mkdirSync(OUTPUT_DIRECTORY, { recursive: true });
-    }
-    tempDir = fs.mkdtempSync(join(__dirname, "temp-"), { encoding: "utf-8" });
-
-    // get each sub-directory from source
-    const iconSets = fs.readdirSync(SOURCE_DIRECTORY, {
-      encoding: "utf-8",
-      withFileTypes: true,
-    });
-
-    const promises = iconSets
-      .filter((iconSet) => iconSet.isDirectory())
-      .map((iconSet) => {
-        const source = join(iconSet.parentPath, iconSet.name);
-        const output = join(tempDir, iconSet.name);
-        return buildIconSet(source, output);
-      });
-    await Promise.all(promises);
-
-    await generateCSS(tempDir, OUTPUT_DIRECTORY);
-  } catch (error) {
-    console.error(error);
-  } finally {
-    if (tempDir != null) fs.rmSync(tempDir, { recursive: true });
-  }
-}
-run();
-
-async function buildIconSet(source, output) {
+async function buildIconSet(source, output, name) {
   console.log(`Building: ${basename(source)}`);
-
-  if (!fs.existsSync(output)) {
-    fs.mkdirSync(output, { recursive: true });
-  }
+  makeDirectory(output);
 
   // Fix icons
   const fixer = new SVGFixer(source, output, {
@@ -178,3 +118,42 @@ async function generateCSS(source, output) {
   fs.writeFileSync(cssPath, css);
   console.log("CSS generated");
 }
+
+function makeDirectory(path) {
+  if (!fs.existsSync(path)) {
+    fs.mkdirSync(path, { recursive: true });
+  }
+}
+
+async function run() {
+  // placed here so we can remove the temp dir after finishing
+  let tempDir;
+
+  try {
+    // Fixer can't handle creating nested folders, so we have to do that ourself
+    makeDirectory(OUTPUT_DIRECTORY);
+    makeDirectory(FIXED_ICON_DIRECTORY);
+    // tempDir = fs.mkdtempSync(join(__dirname, "temp-"), { encoding: "utf-8" });
+
+    // get each sub-directory from source
+    const iconSets = fs.readdirSync(SOURCE_DIRECTORY, {
+      encoding: "utf-8",
+      withFileTypes: true,
+    });
+
+    const promises = iconSets
+      .filter((iconSet) => iconSet.isDirectory() && iconSet.name !== "lucide")
+      .map((iconSet) => {
+        const source = join(iconSet.parentPath, iconSet.name);
+        const output = join(FIXED_ICON_DIRECTORY, iconSet.name);
+        return buildIconSet(source, output, iconSet.name);
+      });
+    await Promise.all(promises);
+    await generateCSS(tempDir, OUTPUT_DIRECTORY);
+  } catch (error) {
+    console.error(error);
+  } finally {
+    if (tempDir != null) fs.rmSync(tempDir, { recursive: true });
+  }
+}
+run();
