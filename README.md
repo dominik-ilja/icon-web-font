@@ -35,6 +35,28 @@ The final step is to pick out the icons you want to use in the web font.
 
 We simply need to create a part of the application that generates the web font. We don't need to worry about anything that comes before it.
 
+Icons need to be the same height and width as their viewbox. We were having an issue where we were doing the following:
+
+```xml
+<svg
+  height="24"
+  width="24"
+  viewBox="0 0 48 48"
+  xmlns="http://www.w3.org/2000/svg"
+>
+```
+
+This caused our rendered icon to be a fourth of its original size. Updating height and width to `48` corrected the issue:
+
+```xml
+<svg
+  height="48"
+  width="48"
+  viewBox="0 0 48 48"
+  xmlns="http://www.w3.org/2000/svg"
+>
+```
+
 ## Issues
 
 The "webfont" package relies upon the "svgicons2svgfont" library. svgicons2svgfont seems to be having issues rendering the icons. What I found is that setting the `fontHeight` to `1000` and `normalize` to `true` in the webfont fixes the rendering issues.
