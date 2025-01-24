@@ -4,26 +4,23 @@ const fsPromises = require("node:fs/promises");
 const { basename, join } = require("node:path");
 
 // 3rd party modules
+
 const SVGFixer = require("oslllo-svg-fixer");
 const { optimize } = require("svgo");
 
-const FIXED_ICON_DIRECTORY = join(__dirname, "fixed-icons");
-const SOURCE_DIRECTORY = join(__dirname, "icons");
-const OUTPUT_DIRECTORY = join(__dirname, "dist");
-const ENCODING = { encoding: "utf-8" };
+// Local modules
+const { config } = require("./config");
 
 async function buildIconSet(source, output, name) {
   console.log(`Building: ${basename(source)}`);
-  makeDirectory(output);
 
-  // Fix icons
   const fixer = new SVGFixer(source, output, {
     showProgressBar: true,
   });
   await fixer.fix();
 
   // Optimize SVGs
-  const svgPaths = await fsPromises.readdir(output, ENCODING);
+  const svgPaths = await fsPromises.readdir(output, { encoding: "utf-8" });
 
   // We track how many characters were removed
   let min = Infinity;
@@ -34,7 +31,7 @@ async function buildIconSet(source, output, name) {
   const promises = svgPaths.map(async (svgPath) => {
     const path = join(output, svgPath);
     return fsPromises
-      .readFile(path, ENCODING)
+      .readFile(path, { encoding: "utf-8" })
       .then((data) => {
         const optimizedSVG = optimize(data, {
           multipass: true,
@@ -49,10 +46,6 @@ async function buildIconSet(source, output, name) {
 
         if (diff < min) min = diff;
         if (diff > max) max = diff;
-
-        // console.log(
-        //   `Characters removed from "${svgPath}": ${prevSize} - ${currSize} = ${diff}`
-        // );
 
         return fsPromises.writeFile(path, optimizedSVG);
       })
@@ -119,37 +112,39 @@ async function generateCSS(source, output) {
   console.log("CSS generated");
 }
 
-function makeDirectory(path) {
-  if (!fs.existsSync(path)) {
-    fs.mkdirSync(path, { recursive: true });
-  }
+function buildOutputDirectories() {
+  Object.values(config.output).forEach((path) => {
+    if (!fs.existsSync(path)) {
+      fs.mkdirSync(path, { recursive: true });
+    }
+  });
 }
+
+// ---
 
 async function run() {
   // placed here so we can remove the temp dir after finishing
   let tempDir;
 
   try {
-    // Fixer can't handle creating nested folders, so we have to do that ourself
-    makeDirectory(OUTPUT_DIRECTORY);
-    makeDirectory(FIXED_ICON_DIRECTORY);
-    // tempDir = fs.mkdtempSync(join(__dirname, "temp-"), { encoding: "utf-8" });
+    buildOutputDirectories();
 
     // get each sub-directory from source
-    const iconSets = fs.readdirSync(SOURCE_DIRECTORY, {
+    const iconSets = fs.readdirSync(config.source.iconSets, {
       encoding: "utf-8",
       withFileTypes: true,
     });
 
     const promises = iconSets
-      .filter((iconSet) => iconSet.isDirectory() && iconSet.name !== "lucide")
+      // .filter((iconSet) => iconSet.isDirectory() && iconSet.name !== "lucide")
+      .filter((iconSet) => iconSet.isDirectory())
       .map((iconSet) => {
-        const source = join(iconSet.parentPath, iconSet.name);
-        const output = join(FIXED_ICON_DIRECTORY, iconSet.name);
+        const source = join(iconSet.path, iconSet.name);
+        const output = join(config.output.fixedIcons, iconSet.name);
         return buildIconSet(source, output, iconSet.name);
       });
+
     await Promise.all(promises);
-    await generateCSS(tempDir, OUTPUT_DIRECTORY);
   } catch (error) {
     console.error(error);
   } finally {

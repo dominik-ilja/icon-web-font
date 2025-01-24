@@ -1,5 +1,6 @@
 const fs = require("node:fs");
-const { join, resolve } = require("node:path");
+const fsPromises = require("node:fs/promises");
+const { join, basename } = require("node:path");
 
 const webfont = require("webfont").default;
 
@@ -14,7 +15,7 @@ function generateCSS(result) {
   font-family: "${config.fontName}";
   font-style: normal;
   font-weight: normal;
-  src: url("./${config.fontName}.woff2") format("woff2");
+  src: url("./${config.fontName}.woff") format("woff");
 }
 
 [class^="icon-"],
@@ -29,7 +30,7 @@ function generateCSS(result) {
 
 `;
 
-  result.glyphsData.forEach(glyph => {
+  result.glyphsData.forEach((glyph) => {
     const { name, unicode } = glyph.metadata;
     const content = unicode[0].charCodeAt(0).toString(16);
 
@@ -38,27 +39,38 @@ function generateCSS(result) {
 }
 
 `;
-  })
+  });
 
   const cssOutput = join(config.output.font, config.fontName + ".css");
   fs.writeFileSync(cssOutput, css.trim());
 }
 
 async function buildWebfont() {
-  const result = await webfont({
-      files: join(config.output.fontIcons, "*.svg"),
-      formats: ["woff2"],
-      normalize: true,
-      startUnicode: 59648, // e900 - this aligns with the starting point of icomoon
-  })
+  // copy the icons over to the config.output.fontIcons
+  const paths = config.iconSets
+    .map(({ iconSet, icons }) => {
+      return icons.map((icon) => join(config.output.fixedIcons, iconSet, `${icon}.svg`));
+    })
+    .flat();
 
-  fs.writeFileSync(
-    join(config.output.font, config.fontName + ".woff2"),
-    result.woff2
+  const promises = paths.map((path) =>
+    fsPromises.copyFile(path, join(config.output.fontIcons, basename(path)))
   );
+  await Promise.all(promises);
+
+  console.log(join(config.output.fontIcons, "**/*.svg"));
+
+  const result = await webfont({
+    files: "dist/icons/*.svg",
+    formats: ["woff"],
+    verbose: true,
+    fontHeight: 1000,
+    normalize: true,
+    startUnicode: 59648, // e900 - this aligns with the starting point of icomoon
+  });
+
+  fs.writeFileSync(join(config.output.font, config.fontName + ".woff"), result.woff);
 
   generateCSS(result);
 }
 buildWebfont();
-
-

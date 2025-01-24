@@ -1,6 +1,6 @@
 const path = require("node:path");
 
-const config = {
+const config = Object.freeze({
   fontName: "foxi-icons",
   iconPrefix: "icon-",
   iconSets: [
@@ -33,6 +33,6 @@ const config = {
     iconSets: path.resolve(__dirname, "./icons"),
   },
   unicodeStartIndex: 59648,
-};
+});
 
 module.exports.config = config;
