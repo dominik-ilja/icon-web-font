@@ -60,10 +60,14 @@ function generateHTML(result) {
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8">
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="./${config.fontName}.css" />
-    <title>${config.fontName}</title>
+
+    <link rel="preload" as="font" href="./foxi-icons.woff" crossorigin>
+    <link rel="preload" as="style" href="./foxi-icons.css">
+
+    <link rel="stylesheet" href="./foxi-icons.css" />
+    <title>foxi-icons</title>
 
     <style>
       *,
