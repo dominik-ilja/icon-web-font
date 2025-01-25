@@ -59,91 +59,150 @@ function generateHTML(result) {
   const html = `
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="preload" as="font" href="./foxi-icons.woff" crossorigin>
-    <link rel="preload" as="style" href="./foxi-icons.css">
+  <link rel="preload" as="font" href="./foxi-icons.woff" crossorigin>
+  <link rel="preload" as="style" href="./foxi-icons.css">
 
-    <link rel="stylesheet" href="./foxi-icons.css" />
-    <title>foxi-icons</title>
+  <link rel="stylesheet" href="./foxi-icons.css" />
+  <title>foxi-icons</title>
 
-    <style>
-      *,
-      *::before,
-      *::after {
-        box-sizing: border-box;
-      }
+  <style>
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
 
+    body {
+      --accent-hue: ${config.accentHue};
+
+      --background: #fff;
+      --bg-interactive: hsl(var(--accent-hue), 100%, 90%);
+      --border-interactive: hsl(var(--accent-hue), 100%, 75%);
+      --foreground: hsl(var(--accent-hue), 60%, 20%);
+      --gradient-stop-1: hsl(var(--accent-hue), 65%, 80%);
+      --gradient-stop-2: hsl(calc(var(--accent-hue) + 7), 70%, 70%);
+    }
+
+    @media (prefers-color-scheme: dark) {
       body {
-        background-color: hsl(180, 100%, 99%);
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        --background: hsl(var(--accent-hue), 50%, 20%);
+        --bg-interactive: hsl(var(--accent-hue), 50%, 28%);
+        --border-interactive: hsl(var(--accent-hue), 100%, 32%);
+        --foreground: hsl(var(--accent-hue), 50%, 96%);
+        --gradient-stop-1: hsl(var(--accent-hue), 50%, 8%);
+        --gradient-stop-2: hsl(calc(var(--accent-hue) + 7), 70%, 15%);
+      }
+    }
+
+    body {
+      background-image: linear-gradient(135deg, var(--gradient-stop-1), var(--gradient-stop-2));
+      color: var(--foreground);
+      display: grid;
+      place-items: center;
+      grid-template-rows: min(100%, 1fr);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      height: 100svh;
+      padding: 2rem;
+      /* overflow: hidden; */
+    }
+
+    button {
+      background-color: transparent;
+      border-radius: 6px;
+      border: 1px solid transparent;
+      color: var(--foreground);
+      cursor: pointer;
+      display: flex;
+      font-size: 1rem;
+      gap: 1rem;
+      height: 100%;
+      justify-content: space-between;
+      margin: 0;
+      padding: 1rem;
+      position: relative;
+      text-align: left;
+      width: 100%;
+
+      span {
+        content: "copy";
+        opacity: 0;
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
       }
 
-      table {
-        width: 100%;
-        max-width: 768px;
-        margin-inline: auto;
-        font-size: 1rem;
-        border-collapse: collapse;
-        border-spacing: 0;
+      &:is(:focus-visible, :hover) {
+        background-color: var(--bg-interactive);
+        border-color: var(--border-interactive);
+
+        span {
+          opacity: 1;
+        }
       }
 
-      th {
-        border-bottom: 1px solid hsl(180, 100%, 96%);
-      }
+    }
 
-      th,
-      td:first-child {
-        text-align: left;
-        padding: 1rem;
-      }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
 
-      td:first-child {
-        font-size: 1.5rem;
-      }
+    td:first-child,
+    th {
+      padding: 1rem;
+      text-align: left;
+    }
 
-      tbody tr:nth-child(odd) {
-        background-color: #fff;
-      }
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: var(--background);
+    }
 
-      button {
-        font-size: 1rem;
-        cursor: pointer;
-        background-color: transparent;
-        border: 1px solid transparent;
-        margin: 0;
-        height: 100%;
-        border-radius: 6px;
-        padding: 1rem;
-        display: flex;
-        width: 100%;
-        text-align: left;
-        transition: all 0.175s;
-      }
+    td {
+      padding: 0;
+    }
 
-      button:is(:focus-visible, :hover) {
-        background-color: hsl(180, 100%, 97%);
-        border-color: hsl(180, 100%, 75%);
-      }
-    </style>
+    [class^="icon-"] {
+      font-size: 1.5rem;
+    }
 
-    <script>
-      window.addEventListener("click", (event) => {
-        const button = event.target.closest("button");
-        const text = button.textContent;
+    .card {
+      background-color: var(--background);
+      border-radius: 6px;
+      font-size: 1rem;
+      margin-inline: auto;
+      max-width: 768px;
+      padding: 0 1rem 1rem 1rem;
+      width: 100%;
+      overflow-y: auto;
+      height: fit-content;
+      max-height: 100%;
+    }
+  </style>
 
-        navigator.clipboard.writeText(text);
-        button.textContent = "Copied!";
+  <script>
+    window.addEventListener("click", (event) => {
+      const button = event.target.closest("button");
+      const span = button.querySelector("span");
 
-        setTimeout(() => {
-          button.textContent = text;
-        }, 1500);
-      })
-    </script>
-  </head>
-  <body>
+      navigator.clipboard.writeText(button.getAttribute("data-copy"));
+      span.textContent = "Copied!";
+
+      setTimeout(() => (span.textContent = "Copy"), 1500);
+    })
+  </script>
+</head>
+
+<body>
+  <div class="card">
     <table>
       <thead>
         <tr>
@@ -156,20 +215,22 @@ function generateHTML(result) {
       ${result.glyphsData
         .map((glyph) => {
           const iconClass = `${config.iconPrefix}${glyph.metadata.name}`;
+          const unicode = glyph.metadata.unicode[0].charCodeAt(0).toString(16);
+
           return `
           <tr>
             <td><span class="${iconClass}"></span></td>
-            <td><button>${iconClass}</button></td>
-            <td><button>${glyph.metadata.unicode[0]
-              .charCodeAt(0)
-              .toString(16)}</button></td>
+            <td><button data-copy="${iconClass}">${iconClass} <span>Copy</span></button></td>
+            <td><button data-copy="${unicode}">${unicode} <span>Copy</span></button></td>
           </tr>
           `.trim();
         })
         .join("\n")}
       </tbody>
     </table>
-  </body>
+  </div>
+</body>
+
 </html>
 `.trim();
 
