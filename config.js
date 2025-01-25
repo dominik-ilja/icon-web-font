@@ -3,6 +3,7 @@ const path = require("node:path");
 const config = Object.freeze({
   accentHue: 210,
   fontName: "foxi-icons",
+  fontFormat: "woff2",
   iconPrefix: "icon-",
   iconSets: [
     {
@@ -11,6 +12,8 @@ const config = Object.freeze({
     },
     {
       icons: [
+        "bug",
+        "candy",
         "chevron-down",
         "chevron-left",
         "chevron-right",

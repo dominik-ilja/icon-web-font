@@ -19,7 +19,7 @@ function generateCSS(result) {
   font-family: "${config.fontName}";
   font-style: normal;
   font-weight: normal;
-  src: url("./${config.fontName}.woff") format("woff");
+  src: url("./${config.fontName}.${config.fontFormat}") format("${config.fontFormat}");
 }
 
 [class^="icon-"],
@@ -38,11 +38,12 @@ function generateCSS(result) {
     const { name, unicode } = glyph.metadata;
     const content = unicode[0].charCodeAt(0).toString(16);
 
-    css += `.${config.iconPrefix}${name}:before {
+    css += `
+.${config.iconPrefix}${name}:before {
   content: "\\${content}";
 }
 
-`;
+`.trimStart();
   });
 
   const cssOutput = join(config.output.font, config.fontName + ".css");
@@ -256,14 +257,17 @@ async function buildWebfont() {
   console.log("Building webfont");
   const result = await webfont({
     files: "dist/icons/*.svg",
-    formats: ["woff"],
+    formats: [config.fontFormat],
     verbose: true,
     fontHeight: 1000,
     normalize: true,
     startUnicode: 59648, // e900 - this aligns with the starting point of icomoon
   });
 
-  fs.writeFileSync(join(config.output.font, config.fontName + ".woff"), result.woff);
+  fs.writeFileSync(
+    join(config.output.font, config.fontName + `.${config.fontFormat}`),
+    result[config.fontFormat]
+  );
 
   generateCSS(result);
   generateHTML(result);
