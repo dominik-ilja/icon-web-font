@@ -190,18 +190,6 @@ function generateHTML(result) {
       max-height: 100%;
     }
   </style>
-
-  <script defer>
-    window.addEventListener("click", (event) => {
-      const button = event.target.closest("button");
-      const span = button.querySelector("span");
-
-      navigator.clipboard.writeText(button.getAttribute("data-copy"));
-      span.textContent = "Copied!";
-
-      setTimeout(() => (span.textContent = "Copy"), 1500);
-    })
-  </script>
 </head>
 
 <body>
@@ -223,8 +211,8 @@ function generateHTML(result) {
           return `
           <tr>
             <td><span class="${iconClass}"></span></td>
-            <td><button data-copy="${iconClass}">${iconClass} <span>Copy</span></button></td>
-            <td><button data-copy="${unicode}">${unicode} <span>Copy</span></button></td>
+            <td><button data-copy="${iconClass}">${iconClass}<span>Copy</span></button></td>
+            <td><button data-copy="${unicode}">${unicode}<span>Copy</span></button></td>
           </tr>
           `.trim();
         })
@@ -232,6 +220,31 @@ function generateHTML(result) {
       </tbody>
     </table>
   </div>
+
+  <script defer>
+    (
+      () => {
+        if (!navigator.clipboard) {
+          alert('Copying is not available setting fallback. Please click on the name or unicode you wish to copy and use "Ctrl+C".');
+          document.querySelectorAll("button").forEach(button => {
+            button.setAttribute("contenteditable", "true");
+            button.querySelector("span").remove();
+          });
+          return;
+        }
+
+        window.addEventListener("click", (event) => {
+          const button = event.target.closest("button");
+          const span = button.querySelector("span");
+
+          navigator.clipboard.writeText(button.getAttribute("data-copy"));
+          span.textContent = "Copied!";
+
+          setTimeout(() => (span.textContent = "Copy"), 1500);
+        });
+      }
+    )()
+  </script>
 </body>
 
 </html>

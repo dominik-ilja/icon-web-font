@@ -57,6 +57,39 @@ Lastly, an HTML file is generated that has a table listing all the icons, their 
 
 ## Gotchas
 
+### HTML
+
+If you don't use HTTPS when viewing the HTML file, then you won't be able to copy values from it. The reason for this is the `navigator.clipboard` is only available when using HTTPS. However, if you open up the HTML file from your file system, then it should be available.
+
+A backup has been set in place where if `navigator.clipboard` isn't available then the buttons have their `contenteditable` set to true. This needs to be done or else the text within the button can't be copied.
+
+### Overrides
+
+Icons which share the same name, but belong to different icon sets will override each other. The icon set that comes last alphabetically will be the "winner".
+
+Let's say we have the following in our config:
+
+```js
+const config = Object.freeze({
+  iconsToIncludeInFont: [
+    {
+      icons: ["sun"],
+      iconSet: "font-awesome",
+    },
+    {
+      icons: ["sun"],
+      iconSet: "foxi",
+    },
+    {
+      icons: ["sun"],
+      iconSet: "lucide",
+    },
+  ],
+});
+```
+
+The alphabetical order would be font-awesome, foxi, then lucide. This means the sun icon from the Lucide library would be used.
+
 ### SVG height, width, and viewbox
 
 SVGs need to be the same height and width as their viewbox. If these attributes differ from the viewbox, then an unexpected result from the "oslllo-svg-fixer" package can happen.
@@ -86,33 +119,6 @@ This caused our rendered icon to be a fourth of its original size. Updating the 
 ### webfont package configuration
 
 The "webfont" package relies upon the "svgicons2svgfont" library. I've encountered issues with the svgicons2svgfont library where rendered icons were distorted and ugly. What I found is that setting the `fontHeight` to `1000` and `normalize` to `true` in the webfont configuration fixes these issues.
-
-### Overrides
-
-Icons which share the same name, but belong to different icon sets will override each other. The icon set that comes last alphabetically will be the "winner".
-
-Let's say we have the following in our config:
-
-```js
-const config = Object.freeze({
-  iconsToIncludeInFont: [
-    {
-      icons: ["sun"],
-      iconSet: "font-awesome",
-    },
-    {
-      icons: ["sun"],
-      iconSet: "foxi",
-    },
-    {
-      icons: ["sun"],
-      iconSet: "lucide",
-    },
-  ],
-});
-```
-
-The alphabetical order would be font-awesome, foxi, then lucide. This means the sun icon from the Lucide library would be used.
 
 ## Todo
 
