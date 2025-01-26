@@ -7,10 +7,11 @@
   },
   "description": "This repository is a collection of icons that I use in icon web fonts.",
   "license": "ISC",
-  "main": "index.js",
   "name": "icons",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build-icons": "node scripts/build-icons.js",
+    "build-webfont": "node scripts/build-webfont.js",
+    "build": "npm run build-icons && npm run build-webfont"
   },
   "version": "1.0.0"
 }
