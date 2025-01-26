@@ -5,7 +5,7 @@ const config = Object.freeze({
   fontName: "foxi-icons",
   fontFormat: "woff2",
   iconPrefix: "icon-",
-  iconSets: [
+  iconsToIncludeInFont: [
     {
       icons: ["discord", "facebook", "twitter"],
       iconSet: "foxi",
@@ -13,6 +13,8 @@ const config = Object.freeze({
     {
       icons: [
         "bug",
+        "banana",
+        "flame",
         "candy",
         "chevron-down",
         "chevron-left",
@@ -34,9 +36,9 @@ const config = Object.freeze({
     fontIcons: path.resolve(__dirname, "./dist/icons"),
   },
   source: {
-    iconSets: path.resolve(__dirname, "./icons"),
+    iconSets: path.resolve(__dirname, "./icon-sets"),
   },
-  unicodeStartIndex: 59648,
+  unicodeStartIndex: 59648, // e900 - this aligns with the starting point of icomoon
 });
 
 module.exports = config;

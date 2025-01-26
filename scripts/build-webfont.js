@@ -64,11 +64,13 @@ function generateHTML(result) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="preload" as="font" href="./foxi-icons.woff" crossorigin>
-  <link rel="preload" as="style" href="./foxi-icons.css">
+  <link rel="preload" as="font" href="./${config.fontName}.${
+    config.fontFormat
+  }" crossorigin>
+  <link rel="preload" as="style" href="./${config.fontName}.css">
 
-  <link rel="stylesheet" href="./foxi-icons.css" />
-  <title>foxi-icons</title>
+  <link rel="stylesheet" href="./${config.fontName}.css" />
+  <title>${config.fontName}</title>
 
   <style>
     *,
@@ -189,7 +191,7 @@ function generateHTML(result) {
     }
   </style>
 
-  <script>
+  <script defer>
     window.addEventListener("click", (event) => {
       const button = event.target.closest("button");
       const span = button.querySelector("span");
@@ -242,7 +244,7 @@ async function buildWebfont() {
   buildOutputDirectories();
 
   // copy the icons over to the config.output.fontIcons
-  const paths = config.iconSets
+  const paths = config.iconsToIncludeInFont
     .map(({ iconSet, icons }) => {
       return icons.map((icon) => join(config.output.fixedIcons, iconSet, `${icon}.svg`));
     })
@@ -261,7 +263,7 @@ async function buildWebfont() {
     verbose: true,
     fontHeight: 1000,
     normalize: true,
-    startUnicode: 59648, // e900 - this aligns with the starting point of icomoon
+    startUnicode: config.unicodeStartIndex,
   });
 
   fs.writeFileSync(
